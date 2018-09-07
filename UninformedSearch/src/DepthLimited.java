@@ -1,61 +1,59 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/*
-   Aidan Chandra
-   Homework #
-   Sep 5, 2018
- */
 public class DepthLimited {
-    
-    private static int depth = 0; 
-    private static int calls = 0;
-    
+
+    public static int depth = 0;
+    public static int calls = 0;
+
     private static int maxDepth = 0;
-    
-    private static Board returnable;
-    
-    public static Board search(Board g, int depth){
+
+    private static Board goal;
+
+    public static Board search(Board board, int depth) {
         maxDepth = depth;
-        if(depthFirstSearch(g)){
-            return returnable;
+        if (depthFirstSearch(board)) {
+            return goal;
         }
         return null;
-        
     }
-    public static boolean depthFirstSearch(Board board){
-        
+
+    public static boolean depthFirstSearch(Board board) {
         calls++;
-        if(calls > depth){
+        //System.out.println("Call #" + calls + ":");
+        //board.print();
+        if (calls > depth) {
             depth = calls;
         }
-        if(depth >= maxDepth){
-            System.out.println("Depth great");
-            return false;
-        }
-            
-        if(board.isGoalState()){
-            System.out.println("Goal State");
+
+        System.out.println("Current depth: " + depth);
+        board.print();
+
+        if (board.isGoalState()) {
+            goal = board;
             return true;
         }
-        
+
+        if (depth >= maxDepth) {
+            System.out.println("Reached maximum depth " + maxDepth + ":");
+            return false;
+        }
+
         Board[] states = board.nextStates();
-        
-        boolean prevResult = true;
-        for(Board b : states){
-            if(b == null)
+
+        for (Board state : states) {
+            if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
                 continue;
-            if(depthFirstSearch(b)){
-                returnable = b;
+            }
+            if (depthFirstSearch(state)) {
                 return true;
             }
         }
-        
+
         calls--;
-        
+
         return false;
+    }
+
+    public static int getDepth() {
+        return depth;
     }
 }

@@ -9,8 +9,8 @@
  * @author aidanchandra
  */
 public interface Game {
-    
+
     boolean isGoalState();
-    
+
     Game[] nextStates();
 }

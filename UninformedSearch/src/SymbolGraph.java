@@ -5,7 +5,7 @@
     Data Strucures
     4/23/18
 
-*/
+ */
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
@@ -159,7 +159,9 @@ public class SymbolGraph implements Iterable<SymbolGraph.Vertex> {
         //Compute the eccentricity and store it (I store it in the vertex class too just for convienence)
         for (Vertex v : graph) {
             int result = breadthFirstSearch(v);
-            if(debug) System.out.println(v.name + ": " + result);
+            if (debug) {
+                System.out.println(v.name + ": " + result);
+            }
             v.setEccentricity(result);
             distances[v.index] = result;
         }
@@ -167,21 +169,24 @@ public class SymbolGraph implements Iterable<SymbolGraph.Vertex> {
         System.out.println("Diameter: " + computeMax(distances));
         int min = computeMin(distances);
         System.out.println("Radius: " + min);
-        
+
         //Now we print out all the centers, of which there may be multiple
         System.out.print("Center(s): ");
-        for(Vertex v : graph)
-            if(v.getEccentricity() == min)
+        for (Vertex v : graph) {
+            if (v.getEccentricity() == min) {
                 System.out.print(v.name + ", ");
+            }
+        }
         System.out.println("");
-        
+
         //And finally print out the weiner index
         int sum = 0;
-        for(int a : distances)
+        for (int a : distances) {
             sum += a;
+        }
         System.out.println("Weiner Index: " + sum);
     }
-    
+
     private static int computeMin(int arr[]) {
         int max = arr[0];
         for (int a : arr) {
@@ -198,7 +203,6 @@ public class SymbolGraph implements Iterable<SymbolGraph.Vertex> {
         return max;
     }
 
-    
     private static int breadthFirstSearch(Vertex start) throws Queue.UnderflowException, Queue.EmptyException {
         //Neccessary array to ensure we do not visit a node twice
         boolean visited[] = new boolean[48];
@@ -233,10 +237,9 @@ public class SymbolGraph implements Iterable<SymbolGraph.Vertex> {
         //Return the max of the depth
         return last;
     }
-     
+
     private static SymbolGraph graph;
 
-    
     public static void main(String[] args) throws Queue.UnderflowException, Queue.EmptyException {
         graph = new SymbolGraph(true);
 
@@ -258,6 +261,6 @@ public class SymbolGraph implements Iterable<SymbolGraph.Vertex> {
         }
         //Compute the eccentricity which will print out all relevant 
         computeEccentricity();
-        
+
     }
 }

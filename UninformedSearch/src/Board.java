@@ -2,77 +2,77 @@
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+public class Board {
 
-public class Board{// implements Game{
-
-    int[][] board;
-    int blankX, blankY;
-    int dimension;
+    private int[][] board;
+    private int blankX;
+    private int blankY;
+    private int dimension;
 
     public Board(int dimension) {
         this.dimension = dimension;
-        board = new int[dimension][dimension];
+        this.board = new int[dimension][dimension];
 
         int[] arr = new int[dimension * dimension];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
         }
-        shuffleArray(arr);
-        
+        this.shuffleArray(arr);
+
         int counter = 0;
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = arr[counter];
-                if(arr[counter] == 0){
-                    blankX = i;
-                    blankY = j;
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = 0; j < this.dimension; j++) {
+                this.board[i][j] = arr[counter];
+                if (arr[counter] == 0) {
+                    this.blankX = i;
+                    this.blankY = j;
                 }
                 counter++;
             }
         }
     }
-    
-    public Board(int[][] boardIn){
+
+    public Board(int[][] boardIn) {
         this.dimension = boardIn.length;
-        board = new int[dimension][dimension];
-        for(int i = 0; i < board.length; i++){
-            for(int j = 0; j < board.length; j++){
-                board[i][j] = boardIn[i][j];
+        this.board = new int[dimension][dimension];
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = 0; j < this.dimension; j++) {
+                this.board[i][j] = boardIn[i][j];
             }
         }
-        this.blankX = getXPos(0);
-        this.blankY = getYPos(0);
+        this.blankX = this.getXPos(0);
+        this.blankY = this.getYPos(0);
     }
 
-    public Board[] nextStates(){
-        
+    public Board[] nextStates() {
+
         Board[] returnable = new Board[4];
         int index = 0;
-        
-        if(blankY - 1 >= 0){
+
+        if (this.blankY - 1 >= 0) {
             Board up = new Board(this.board);
-            up.swap(blankX, blankY, blankX, blankY -1);
+            up.swap(blankX, blankY, blankX, blankY - 1);
             returnable[index++] = up;
         }
-        if(blankY + 1 < dimension){
+        if (this.blankY + 1 < this.dimension) {
             Board down = new Board(this.board);
             down.swap(blankX, blankY, blankX, blankY + 1);
             returnable[index++] = down;
         }
-        if(blankX - 1 >= 0){
+        if (this.blankX - 1 >= 0) {
             Board left = new Board(this.board);
-            left.swap(blankX, blankY, blankX-1, blankY);
+            left.swap(blankX, blankY, blankX - 1, blankY);
             returnable[index++] = left;
         }
-        if(blankX + 1 < dimension){
+        if (this.blankX + 1 < this.dimension) {
             Board right = new Board(this.board);
-            right.swap(blankX, blankY, blankX+1, blankY);
+            right.swap(blankX, blankY, blankX + 1, blankY);
             returnable[index++] = right;
         }
-        
+
         return returnable;
     }
-    
+
     public int get(int x, int y) {
         if (x > dimension || y > dimension || x < 0 || y < 0) {
             return -1;
@@ -87,7 +87,7 @@ public class Board{// implements Game{
         }
 
         board[x][y] = val;
-        if(val == 0){
+        if (val == 0) {
             blankX = x;
             blankY = y;
         }
@@ -103,15 +103,15 @@ public class Board{// implements Game{
         }
 
         int initialVal = get(x, y);
-        set(x, y, get(xtwo, ytwo));
-        set(xtwo, ytwo, initialVal);
+        this.set(x, y, get(xtwo, ytwo));
+        this.set(xtwo, ytwo, initialVal);
         return true;
     }
 
     public int getXPos(int val) {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == val) {
+                if (this.board[i][j] == val) {
                     return i;
                 }
             }
@@ -131,10 +131,18 @@ public class Board{// implements Game{
     }
 
     public boolean isGoalState() {
-        int counter = 0;
+        int counter = 1;
+        if (this.board[this.dimension - 1][this.dimension - 1] != 0) { // If last tile is not blank, it's not a goal
+            //System.out.println("Last tile is not 0");
+            return false;
+        }
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j] != counter) {
+                    if (i == this.dimension - 1 && j == this.dimension - 1) {
+                        continue;
+                    }
+                    //System.out.println(board[i][j] + " is not equal to " + counter);
                     return false;
                 }
                 counter++;
@@ -153,8 +161,8 @@ public class Board{// implements Game{
             System.out.println("]");
         }
     }
-    
-    public String blankPos(){
+
+    public String blankPos() {
         return String.valueOf(blankX) + ", " + String.valueOf(blankY);
     }
 
