@@ -46,12 +46,13 @@ public class Board {
     }
     private boolean isValid(int[] arr){
         int inversions = 0;
-        for(int i = 0; i < arr.length - 1; i++){
+        for(int i = 0; i < arr.length; i++){
             int value = arr[i];
             for(int j = 0; j < i; j++){
+                if(value == 0)
+                    break;
                 if(arr[j] > value){
                     inversions++;
-                    break;
                 }
             }
         }
@@ -61,8 +62,16 @@ public class Board {
                 zeroPosition = i;
         }
         int rowsFromTop = zeroPosition / dimension;
-        int rowsFromBot = 1 + dimension - rowsFromTop;
-        return ((board.length % 2 == 1 && inversions % 2 == 0) || (board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0));
+        int rowsFromBot = dimension - rowsFromTop;
+        System.out.println("Results: ");
+        System.out.print("  [");
+        for(int a : arr)
+            System.out.print(a + ", ");
+        System.out.println("]");
+        System.out.println("    Inversions:"  + inversions);
+        System.out.println("    Rows From Bot: " + rowsFromBot);
+        System.out.println("    Returnable: " + ((board.length % 2 == 1 && inversions % 2 == 0) || (board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
+        return ((board.length % 2 == 1 && inversions % 2 == 0) || ((board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
     }
     public Board[] nextStates() {
 
