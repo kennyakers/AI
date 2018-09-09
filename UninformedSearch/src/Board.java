@@ -48,7 +48,7 @@ public class Board {
 
         Board[] returnable = new Board[4];
         int index = 0;
-
+        
         if (this.blankY - 1 >= 0) {
             Board up = new Board(this.board);
             up.swap(blankX, blankY, blankX, blankY - 1);
@@ -69,7 +69,7 @@ public class Board {
             right.swap(blankX, blankY, blankX + 1, blankY);
             returnable[index++] = right;
         }
-
+        this.shuffleArray(returnable);
         return returnable;
     }
 
@@ -171,6 +171,16 @@ public class Board {
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
+    }
+    
+    private void shuffleArray(Board[] ar) {
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i > 0; i--) {
+            int index = rnd.nextInt(i + 1);
+            Board a = ar[index];
             ar[index] = ar[i];
             ar[i] = a;
         }

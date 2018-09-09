@@ -18,8 +18,7 @@ public class DepthLimited {
 
     public static boolean depthFirstSearch(Board board) {
         calls++;
-        //System.out.println("Call #" + calls + ":");
-        //board.print();
+
         if (calls > depth) {
             depth = calls;
         }
@@ -38,6 +37,14 @@ public class DepthLimited {
         }
 
         Board[] states = board.nextStates();
+        System.out.println("Possible moves:");
+        for (Board b : states) {
+            if (b == null) {
+                continue;
+            }
+            b.print();
+            System.out.println("");
+        }
 
         for (Board state : states) {
             if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
@@ -47,7 +54,6 @@ public class DepthLimited {
                 return true;
             }
         }
-
         calls--;
 
         return false;
