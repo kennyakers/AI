@@ -1,9 +1,16 @@
 
+/**
+ * Kenny Akers and Aidan Chandra
+ * AI
+ * 9/10/18
+ *
+ * Sliding tile solver using uninformed search (Iterative deepening depth first search)
+ */
+
 public class DepthLimited {
 
     public static int depth = 0;
     public static int calls = 0;
-
     private static int maxDepth = 0;
 
     private static Board goal;
@@ -23,7 +30,7 @@ public class DepthLimited {
             depth = calls;
         }
 
-        System.out.println("Current depth: " + depth);
+        System.out.println("\nCurrent depth: " + depth);
         board.print();
 
         if (board.isGoalState()) {
@@ -32,13 +39,14 @@ public class DepthLimited {
         }
 
         if (depth >= maxDepth) {
-            System.out.println("Reached maximum depth " + depth + ":");
+            System.out.println("Reached maximum depth " + depth);
             return false;
         }
 
         Board[] states = board.nextStates();
-        System.out.println("Possible moves:");
-        for (Board b : states) {
+        System.out.println("\nPossible moves:");
+        
+        for (Board b : states) { // Lists possible moves from current board.
             if (b == null) {
                 continue;
             }

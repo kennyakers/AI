@@ -1,4 +1,13 @@
 
+/**
+ * Kenny Akers and Aidan Chandra
+ * AI
+ * 9/10/18
+ *
+ * Sliding tile solver using uninformed search (Iterative deepening depth first search)
+ */
+
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -7,9 +16,10 @@ public class Board {
     private int[][] board;
     private int blankX;
     private int blankY;
-    private int dimension;
+    private final int dimension;
 
     public Board(int dimension) {
+        System.out.println("Generating starting state:");
         this.dimension = dimension;
         this.board = new int[dimension][dimension];
 
@@ -34,7 +44,7 @@ public class Board {
         }
     }
 
-    public Board(int[][] boardIn) {
+    public Board(int[][] boardIn) { // Copy constructor
         this.dimension = boardIn.length;
         this.board = new int[dimension][dimension];
         for (int i = 0; i < this.dimension; i++) {
@@ -46,7 +56,8 @@ public class Board {
         this.blankY = this.getYPos(0);
     }
 
-    private boolean isValid(int[] arr) {
+    // Solvability source: https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
+    private boolean isValid(int[] arr) { // Checks if the generated board is solvable
         int inversions = 0;
         for (int i = 0; i < arr.length; i++) {
             int value = arr[i];
@@ -67,16 +78,14 @@ public class Board {
         }
         int rowsFromTop = zeroPosition / dimension;
         int rowsFromBot = dimension - rowsFromTop;
-        System.out.println("Results: ");
-        System.out.print("  [");
-        for (int a : arr) {
-            System.out.print(a + ", ");
-        }
-        System.out.println("]");
-        System.out.println("    Inversions:" + inversions);
-        System.out.println("    Rows From Bot: " + rowsFromBot);
-        System.out.println("    Returnable: " + (((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)))));
-        return ((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
+
+        System.out.println("\t" + Arrays.toString(arr));
+        System.out.println("\tInversions: " + inversions);
+        System.out.println("\tRows From Bot: " + rowsFromBot);
+        boolean valid = ((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
+        System.out.println("\tValid: " + valid + "\n");
+
+        return valid;
     }
 
     public Board[] nextStates() {
@@ -167,8 +176,7 @@ public class Board {
 
     public boolean isGoalState() {
         int counter = 1;
-        if (this.board[this.dimension - 1][this.dimension - 1] != 0) { // If last tile is not blank, it's not a goal
-            //System.out.println("Last tile is not 0");
+        if (this.board[this.dimension - 1][this.dimension - 1] != 0) {
             return false;
         }
         for (int i = 0; i < board.length; i++) {
@@ -177,7 +185,6 @@ public class Board {
                     if (i == this.dimension - 1 && j == this.dimension - 1) {
                         continue;
                     }
-                    //System.out.println(board[i][j] + " is not equal to " + counter);
                     return false;
                 }
                 counter++;
@@ -221,9 +228,4 @@ public class Board {
         }
     }
 
-    //Inclusive inclusive
-    int random(int min, int max) {
-        int range = (max - min) + 1;
-        return (int) (Math.random() * range) + min;
-    }
 }
