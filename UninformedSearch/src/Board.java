@@ -18,8 +18,9 @@ public class Board {
             arr[i] = i;
         }
         this.shuffleArray(arr);
-        while(!isValid(arr))
+        while (!isValid(arr)) {
             this.shuffleArray(arr);
+        }
         int counter = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
@@ -44,40 +45,45 @@ public class Board {
         this.blankX = this.getXPos(0);
         this.blankY = this.getYPos(0);
     }
-    private boolean isValid(int[] arr){
+
+    private boolean isValid(int[] arr) {
         int inversions = 0;
-        for(int i = 0; i < arr.length; i++){
+        for (int i = 0; i < arr.length; i++) {
             int value = arr[i];
-            for(int j = 0; j < i; j++){
-                if(value == 0)
+            for (int j = 0; j < i; j++) {
+                if (value == 0) {
                     break;
-                if(arr[j] > value){
+                }
+                if (arr[j] > value) {
                     inversions++;
                 }
             }
         }
         int zeroPosition = 0;
-        for(int i = 0; i < arr.length; i ++){
-            if(arr[i] == 0)
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 0) {
                 zeroPosition = i;
+            }
         }
         int rowsFromTop = zeroPosition / dimension;
         int rowsFromBot = dimension - rowsFromTop;
         System.out.println("Results: ");
         System.out.print("  [");
-        for(int a : arr)
+        for (int a : arr) {
             System.out.print(a + ", ");
+        }
         System.out.println("]");
-        System.out.println("    Inversions:"  + inversions);
+        System.out.println("    Inversions:" + inversions);
         System.out.println("    Rows From Bot: " + rowsFromBot);
-        System.out.println("    Returnable: " + ((board.length % 2 == 1 && inversions % 2 == 0) || (board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
-        return ((board.length % 2 == 1 && inversions % 2 == 0) || ((board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
+        System.out.println("    Returnable: " + (((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)))));
+        return ((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
     }
+
     public Board[] nextStates() {
 
         Board[] returnable = new Board[4];
         int index = 0;
-        
+
         if (this.blankY - 1 >= 0) {
             Board up = new Board(this.board);
             up.swap(blankX, blankY, blankX, blankY - 1);
@@ -204,7 +210,7 @@ public class Board {
             ar[i] = a;
         }
     }
-    
+
     private void shuffleArray(Board[] ar) {
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
@@ -214,10 +220,10 @@ public class Board {
             ar[i] = a;
         }
     }
-    
+
     //Inclusive inclusive
-    int random(int min, int max){
-        int range = (max - min) + 1;     
-        return (int)(Math.random() * range) + min;
+    int random(int min, int max) {
+        int range = (max - min) + 1;
+        return (int) (Math.random() * range) + min;
     }
 }

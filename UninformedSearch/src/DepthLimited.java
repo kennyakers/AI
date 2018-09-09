@@ -32,7 +32,7 @@ public class DepthLimited {
         }
 
         if (depth >= maxDepth) {
-            System.out.println("Reached maximum depth " + maxDepth + ":");
+            System.out.println("Reached maximum depth " + depth + ":");
             return false;
         }
 
