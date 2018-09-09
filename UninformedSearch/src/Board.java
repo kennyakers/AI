@@ -18,7 +18,8 @@ public class Board {
             arr[i] = i;
         }
         this.shuffleArray(arr);
-
+        while(!isValid(arr))
+            this.shuffleArray(arr);
         int counter = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
@@ -43,7 +44,26 @@ public class Board {
         this.blankX = this.getXPos(0);
         this.blankY = this.getYPos(0);
     }
-
+    private boolean isValid(int[] arr){
+        int inversions = 0;
+        for(int i = 0; i < arr.length - 1; i++){
+            int value = arr[i];
+            for(int j = 0; j < i; j++){
+                if(arr[j] > value){
+                    inversions++;
+                    break;
+                }
+            }
+        }
+        int zeroPosition = 0;
+        for(int i = 0; i < arr.length; i ++){
+            if(arr[i] == 0)
+                zeroPosition = i;
+        }
+        int rowsFromTop = zeroPosition / dimension;
+        int rowsFromBot = 1 + dimension - rowsFromTop;
+        return ((board.length % 2 == 1 && inversions % 2 == 0) || (board.length % 2 == 0 && rowsFromBot % 2 == 1) == (inversions % 2 == 0));
+    }
     public Board[] nextStates() {
 
         Board[] returnable = new Board[4];
@@ -184,5 +204,11 @@ public class Board {
             ar[index] = ar[i];
             ar[i] = a;
         }
+    }
+    
+    //Inclusive inclusive
+    int random(int min, int max){
+        int range = (max - min) + 1;     
+        return (int)(Math.random() * range) + min;
     }
 }
