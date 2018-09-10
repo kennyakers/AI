@@ -125,7 +125,7 @@ public class Board {
         return board[x][y];
     }
 
-    public boolean set(int x, int y, int val) {
+    private boolean set(int x, int y, int val) {
         if (x > dimension || y > dimension || x < 0 || y < 0) {
             return false;
         }
@@ -138,7 +138,7 @@ public class Board {
         return true;
     }
 
-    public boolean swap(int x, int y, int xtwo, int ytwo) {
+    private boolean swap(int x, int y, int xtwo, int ytwo) {
         if (x > dimension || y > dimension || x < 0 || y < 0) {
             return false;
         }

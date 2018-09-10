@@ -15,15 +15,15 @@ public class DepthLimited {
 
     private static Board goal;
 
-    public static Board search(Board board, int depth) {
-        maxDepth = depth;
+    public static Board search(Board board, int maxDepth) {
+        DepthLimited.maxDepth = maxDepth;
         if (depthFirstSearch(board)) {
             return goal;
         }
         return null;
     }
 
-    public static boolean depthFirstSearch(Board board) {
+    private static boolean depthFirstSearch(Board board) {
         calls++;
 
         if (calls > depth) {
@@ -40,6 +40,7 @@ public class DepthLimited {
 
         if (depth >= maxDepth) {
             System.out.println("Reached maximum depth " + depth);
+            calls--;
             return false;
         }
 
