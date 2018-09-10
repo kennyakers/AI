@@ -6,7 +6,6 @@
  *
  * Sliding tile solver using uninformed search (Iterative deepening depth first search)
  */
-
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
