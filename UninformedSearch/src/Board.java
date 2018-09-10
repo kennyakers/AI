@@ -6,12 +6,12 @@
  *
  * Sliding tile solver using uninformed search (Iterative deepening depth first search)
  */
-
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Board {
+public class Board implements GameState, Iterable<GameState> {
 
     private int[][] board;
     private int blankX;
@@ -88,7 +88,7 @@ public class Board {
         return valid;
     }
 
-    public Board[] nextStates() {
+    public stateIterator iterator() {
 
         Board[] returnable = new Board[4];
         int index = 0;
@@ -114,7 +114,8 @@ public class Board {
             returnable[index++] = right;
         }
         this.shuffleArray(returnable);
-        return returnable;
+
+        return new stateIterator(returnable);
     }
 
     public int get(int x, int y) {
@@ -225,6 +226,25 @@ public class Board {
             Board a = ar[index];
             ar[index] = ar[i];
             ar[i] = a;
+        }
+    }
+
+    private class stateIterator implements Iterator<GameState>{
+
+        private GameState[] arr;
+        int index;
+
+        public stateIterator(GameState[] in) {
+            this.arr = in;
+            index = 0;
+        }
+
+        public boolean hasNext() {
+            return index < arr.length;
+        }
+
+        public GameState next() {
+            return arr[index++];
         }
     }
 
