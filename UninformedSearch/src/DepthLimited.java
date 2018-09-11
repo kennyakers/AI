@@ -12,7 +12,7 @@ public class DepthLimited {
     public static int calls = 0;
     private static int maxDepth = 0;
 
-    private static boolean debug = false;
+    private static final boolean debug = false;
 
     private static GameState goal;
 
