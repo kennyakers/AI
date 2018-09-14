@@ -40,6 +40,7 @@ public class Tester {
                 if(i + 1 < args.length){   
                     try{
                         size = Integer.valueOf(args[i + 1]);
+                        i +=1;
                     }
                     catch (NumberFormatException e){
                         System.out.println("No number supplied following \"generate\"");
@@ -70,19 +71,20 @@ public class Tester {
                 System.out.println("Count: " + count);
                 int[] arr = new int[count];
                 
-                index = i;
+                index = 0;
                 int arrIndex = 0;
                 
                 while(index < args.length && !args[index].equals("]") && arrIndex < arr.length){
                     try{
                         int value = Integer.valueOf(args[index]);
                         arr[arrIndex] = value;
+                        arrIndex++;
                     }
                     catch (NumberFormatException E){
-                        System.out.println("Incorrect number specified within array");
+                        //System.out.println("Incorrect number specified within array");
                     }
                     index++;
-                    arrIndex++;
+                    
                 }
                 System.out.print("Provided state with: ");
                 for(int a : arr){
