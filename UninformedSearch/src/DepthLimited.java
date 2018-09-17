@@ -2,7 +2,6 @@
 /**
  * Kenny Akers and Aidan Chandra
  * AI
- * 9/10/18
  *
  * Sliding tile solver using uninformed search (Iterative deepening depth first search)
  */

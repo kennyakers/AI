@@ -1,102 +1,75 @@
 
+import java.io.Console;
+
 /**
- * Kenny Akers and Aidan Chandra
- * AI
- * 9/10/18
+ * Kenny Akers and Aidan Chandra AI 9/10/18
  *
- * Sliding tile solver using uninformed search (Iterative deepening depth first search)
+ * Sliding tile solver using uninformed search (Iterative deepening depth first
+ * search)
  *
- * TODO:
- * Statistics
- * Way to enter into the command line
- * Max depth
- * Goal state depth
+ * TODO: Statistics Way to enter into the command line Max depth Goal state
+ * depth
  */
 public class Tester {
 
     private static boolean debug = false;
+    private static String startState = "";
 
     /*
     Required Arguments:
-        - generate <number> Generates a random state to begin from
+        -dimension <n> Generates a random board with dimension nxn
             or
-        - state [<state>]     Generates a state based off of the provided string
-    
+        -state [<state>]     Generates a state based off of the provided string
+
     Optional Arguments:
-        - override          Will attempt to solve from an unsolvable start state
-        - verbose           Toggles on verbose output
-        
-    
-    */
+        -override          Will attempt to solve from an unsolvable start state
+        -verbose           Toggles on verbose output
+
+
+     */
     public static void main(String[] args) {
+
+        Console console = System.console();
+        String option = "";
+        int dimension = 0;
         
-        Board b;
-        
-        for(int i = 0; i < args.length; i++){
-            String arg = args[i];
-            
-            if(arg.equals("generate")){
-                int size = 0;
-                if(i + 1 < args.length){   
-                    try{
-                        size = Integer.valueOf(args[i + 1]);
-                        i +=1;
-                    }
-                    catch (NumberFormatException e){
-                        System.out.println("No number supplied following \"generate\"");
-                        return;
-                    }
-                }
-                else{
-                        System.out.println("No number supplied following \"generate\"");
-                        return;
-                }
-                //b = new Board(size);
-                System.out.println("Generate with size: " + size);
-            }
-            
-            else if(arg.equals("state")){
-                if(i + 1 < args.length){
-                    if(!args[i+1].equals("[")){
-                        System.out.println("Misformated given state");
-                    }
-                }
-                int index = i;
-                int count = 0;
-                while(index < args.length && !args[index].equals("]")){
-                    count++;
-                    index++;
-                }
-                count -=2;
-                System.out.println("Count: " + count);
-                int[] arr = new int[count];
-                
-                index = 0;
-                int arrIndex = 0;
-                
-                while(index < args.length && !args[index].equals("]") && arrIndex < arr.length){
-                    try{
-                        int value = Integer.valueOf(args[index]);
-                        arr[arrIndex] = value;
-                        arrIndex++;
-                    }
-                    catch (NumberFormatException E){
-                        //System.out.println("Incorrect number specified within array");
-                    }
-                    index++;
+
+        if (console == null) {
+            System.err.println("No console");
+            return;
+        }
+
+        for (String arg : args) {
+            switch (arg) {
+                case "-dimension":
+                    option = arg;
+                    continue;
+                case "-state":
+                    option = arg;
+                    continue;
+                case "-override":
                     
-                }
-                System.out.print("Provided state with: ");
-                for(int a : arr){
-                    System.out.print(a + " ");
-                }
-                System.out.println("");
             }
-            
+
+            switch (option) {
+                case "-dimension":
+                    try {
+                        dimension = Integer.parseInt(arg);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Invalid dimension: " + arg);
+                    }
+                    break;
+                case "-state":
+                    startState += arg + " ";
+                    break;
+            }
         }
         
+        System.out.println("S: " + startState);
+        System.out.println("D: " + dimension);
         
-        /*
+
+ /*
         Board b = new Board(3);
         for (int depth = 1; depth < Integer.MAX_VALUE; depth++) {
             DepthLimited.depth = 0;
@@ -115,8 +88,7 @@ public class Tester {
                 break;
             }
         }
-        */
-
+         */
     }
 
 }

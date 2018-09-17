@@ -10,7 +10,7 @@
  */
 import java.util.Iterator;
 
-public interface GameState extends Iterable<GameState>{
+public interface GameState extends Iterable<GameState> {
 
     public boolean isGoalState();
 

@@ -55,19 +55,25 @@ public class Board implements GameState, Iterable<GameState> {
         this.blankX = this.getXPos(0);
         this.blankY = this.getYPos(0);
     }
-    
+
     /*
         Intializes instance from a board array
-    */
-    public Board(int[] boardArray){
-        int[][] boardIn = new int[(int)Math.sqrt(boardArray.length)][(int)Math.sqrt(boardArray.length)];
+     */
+    public Board(int[] boardArray, boolean check) {
+        int[][] boardIn = new int[(int) Math.sqrt(boardArray.length)][(int) Math.sqrt(boardArray.length)];
         int index = 0;
-        for(int i = 0; i < Math.sqrt(boardArray.length); i++){
-            for(int j = 0; j < Math.sqrt(boardArray.length); j++){
+
+        for (int i = 0; i < Math.sqrt(boardArray.length); i++) {
+            for (int j = 0; j < Math.sqrt(boardArray.length); j++) {
                 boardIn[i][j] = boardArray[index++];
             }
         }
-        
+        if (check) {
+            this.shuffleArray(boardArray);
+            while (!isValid(boardArray)) {
+                this.shuffleArray(boardArray);
+            }
+        }
         this.dimension = boardIn.length;
         this.board = new int[dimension][dimension];
         for (int i = 0; i < this.dimension; i++) {
@@ -77,7 +83,7 @@ public class Board implements GameState, Iterable<GameState> {
         }
         this.blankX = this.getXPos(0);
         this.blankY = this.getYPos(0);
-        
+
     }
 
     // Solvability source: https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
@@ -253,7 +259,7 @@ public class Board implements GameState, Iterable<GameState> {
         }
     }
 
-    private class stateIterator implements Iterator<GameState>{
+    private class stateIterator implements Iterator<GameState> {
 
         private GameState[] arr;
         int index;
