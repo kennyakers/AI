@@ -24,15 +24,13 @@ public class Tester {
     Optional Arguments:
         -override          Will attempt to solve from an unsolvable start state
         -verbose           Toggles on verbose output
-
-
      */
     public static void main(String[] args) {
 
         Console console = System.console();
         String option = "";
         int dimension = 0;
-        
+        Boolean override = false;
 
         if (console == null) {
             System.err.println("No console");
@@ -48,6 +46,11 @@ public class Tester {
                     option = arg;
                     continue;
                 case "-override":
+                    override = true;
+                    continue;
+                case "-verbose":
+                    debug = true;
+                    continue;
                     
             }
 
@@ -60,13 +63,23 @@ public class Tester {
                     }
                     break;
                 case "-state":
-                    startState += arg + " ";
+                    startState += arg + ",";
                     break;
             }
         }
         
-        System.out.println("S: " + startState);
-        System.out.println("D: " + dimension);
+        if(debug){
+            System.out.println("S: " + startState);
+            System.out.println("D: " + dimension);
+            System.out.println("O: " + override);
+        }
+        if(startState.equals("")){
+            System.out.println("Generating new state with dimension " + dimension + ". Override: " + override);
+            Board b = new Board(dimension, override);
+        }
+        else{
+            
+        }
         
 
  /*

@@ -18,7 +18,7 @@ public class Board implements GameState, Iterable<GameState> {
     private int blankY;
     private final int dimension;
 
-    public Board(int dimension) {
+    public Board(int dimension, boolean check) {
         System.out.println("Generating starting state:");
         this.dimension = dimension;
         this.board = new int[dimension][dimension];
@@ -27,10 +27,15 @@ public class Board implements GameState, Iterable<GameState> {
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
         }
-        this.shuffleArray(arr);
-        while (!isValid(arr)) {
+        
+        if(check){
             this.shuffleArray(arr);
+            while (!isValid(arr)) {
+                this.shuffleArray(arr);
+            }
         }
+        
+        
         int counter = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
@@ -68,12 +73,16 @@ public class Board implements GameState, Iterable<GameState> {
                 boardIn[i][j] = boardArray[index++];
             }
         }
+        
+        
         if (check) {
             this.shuffleArray(boardArray);
             while (!isValid(boardArray)) {
                 this.shuffleArray(boardArray);
             }
         }
+        
+        
         this.dimension = boardIn.length;
         this.board = new int[dimension][dimension];
         for (int i = 0; i < this.dimension; i++) {
