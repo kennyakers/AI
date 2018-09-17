@@ -57,8 +57,8 @@ public class Board implements GameState, Iterable<GameState> {
                 this.board[i][j] = boardIn[i][j];
             }
         }
-        this.blankX = this.getXPos(0);
-        this.blankY = this.getYPos(0);
+        this.blankX = this.getRow(0);
+        this.blankY = this.getColumn(0);
     }
 
     /*
@@ -90,8 +90,8 @@ public class Board implements GameState, Iterable<GameState> {
                 this.board[i][j] = boardIn[i][j];
             }
         }
-        this.blankX = this.getXPos(0);
-        this.blankY = this.getYPos(0);
+        this.blankX = this.getRow(0);
+        this.blankY = this.getColumn(0);
 
     }
 
@@ -192,7 +192,7 @@ public class Board implements GameState, Iterable<GameState> {
         return true;
     }
 
-    public int getXPos(int val) {
+    public int getRow(int val) {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (this.board[i][j] == val) {
@@ -203,7 +203,7 @@ public class Board implements GameState, Iterable<GameState> {
         return -1;
     }
 
-    public int getYPos(int val) {
+    public int getColumn(int val) {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j] == val) {
@@ -248,6 +248,41 @@ public class Board implements GameState, Iterable<GameState> {
         return String.valueOf(blankX) + ", " + String.valueOf(blankY);
     }
 
+    public int netOutOfPlace(){
+        int sum = 0;
+        for(int i = 0; i < dimension; i++){
+            for(int j = 0; j < dimension; j++){
+                if(!inPlace(get(i,j))){
+                    sum+=1;
+                }
+            }
+        }
+        return sum;
+    }
+    public int manhattanSum(){
+        int sum = 0;
+        for(int i = 0; i < dimension; i++){
+            for(int j = 0; j < dimension; j++){
+                sum += manhattan(get(i,j));
+            }
+        }
+        return sum;
+    }
+    public boolean inPlace(int val){
+        if(val == 0)
+            return board[dimension - 1][dimension - 1] == 0;
+        
+        return val - 1 == getRow(val) * dimension + getColumn(val);
+    }
+    public int manhattan(int val){
+        int desiredRow = (val / dimension) -1;
+        int desiredCol = (val % dimension) -1;
+        int actualRow = getRow(val);
+        int actualCol = getColumn(val);
+        return (Math.abs(desiredRow - actualRow) + Math.abs(desiredCol - actualCol));
+    }
+    
+    
     private void shuffleArray(int[] ar) {
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
