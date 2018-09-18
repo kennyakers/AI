@@ -7,13 +7,20 @@ import java.io.Console;
  * Sliding tile solver using uninformed search (Iterative deepening depth first
  * search)
  *
- * TODO: Statistics Way to enter into the command line Max depth Goal state
- * depth
+ * TODO:
+ *
+ * Statistics
+ *
+ * Max depth
+ *
+ * Goal state depth
  */
 public class Tester {
 
-    private static boolean debug = false;
     private static String startState = "";
+    private static int dimension = 0;
+    public static boolean debug = false;
+    private static boolean override = true;
 
     /*
     Required Arguments:
@@ -29,8 +36,8 @@ public class Tester {
 
         Console console = System.console();
         String option = "";
-        int dimension = 0;
-        Boolean override = false;
+        dimension = 0;
+        override = false;
 
         if (console == null) {
             System.err.println("No console");
@@ -51,7 +58,6 @@ public class Tester {
                 case "-verbose":
                     debug = true;
                     continue;
-                    
             }
 
             switch (option) {
@@ -67,41 +73,39 @@ public class Tester {
                     break;
             }
         }
-        
-        if(debug){
-            System.out.println("S: " + startState);
-            System.out.println("D: " + dimension);
-            System.out.println("O: " + override);
-        }
-        if(startState.equals("")){
-            System.out.println("Generating new state with dimension " + dimension + ". Override: " + override);
-            Board b = new Board(dimension, override);
-        }
-        else{
-            
-        }
-        
 
- /*
-        Board b = new Board(3);
-        for (int depth = 1; depth < Integer.MAX_VALUE; depth++) {
-            DepthLimited.depth = 0;
-            DepthLimited.calls = 0;
-            GameState solution = DepthLimited.search(b, depth);
-            if (solution == null) {
-                if (debug) {
-                    System.out.println("No solution found with depth " + DepthLimited.getDepth());
-                }
-                if (debug) {
-                    System.out.println("\n");
-                }
-            } else {
-                System.out.println("\nSolution:");
-                solution.print();
-                break;
-            }
+        if (debug) {
+            System.out.println("Start state: " + startState);
+            System.out.println("Dimension: " + dimension);
+            System.out.println("Override: " + override);
         }
-         */
+        Board board;
+
+        if (!startState.isEmpty()) {
+            String[] tiles = startState.split(",");
+            int[] tileValues = new int[tiles.length];
+
+            if (tileValues.length == Math.pow((int) Math.sqrt(tileValues.length), 2)) {
+                if (debug) {
+                    System.out.println("Start state inputted.");
+                }
+                for (int i = 0; i < tiles.length; i++) {
+                    tileValues[i] = Integer.parseInt(tiles[i]);
+                }
+                board = new Board(tileValues, override, debug);
+            } else {
+                if (debug) {
+                    System.out.println("Not enough values provided for valid board. Defaulting to random start state.");
+                }
+                board = new Board(dimension, override, debug);
+            }
+        } else {
+            if (debug) {
+                System.out.println("Generating new " + dimension + "x" + dimension + " state");
+            }
+            board = new Board(dimension, override, debug);
+        }
+        board.print();
     }
 
 }

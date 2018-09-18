@@ -1,27 +1,26 @@
 
 import java.util.Arrays;
 
-
 /**
- * Kenny Akers and Aidan Chandra
- * AI
+ * Kenny Akers and Aidan Chandra AI
  *
- * Sliding tile solver using uninformed search (Iterative deepening depth first search)
+ * Sliding tile solver using informed search (Recursive Best-First Search)
  */
 public class InformedSearch {
 
     public static int depth = 0;
     public static int calls = 0;
     private static int maxDepth = 0;
-    private static heuristicMethods heuristicMethod;
+    private static HeuristicMethods heuristicMethod;
 
-    private static final boolean debug = false;
+    private static boolean debug;
 
     private static GameState goal;
 
-    public static GameState search(GameState board, int maxDepth, heuristicMethods desired) {
-        heuristicMethod = desired;
-        InformedSearch.maxDepth = maxDepth;
+    public static GameState search(GameState board, int max, HeuristicMethods method, boolean debugFlag) {
+        heuristicMethod = method;
+        maxDepth = max;
+        debug = debugFlag;
         if (depthFirstSearch(board)) {
             return goal;
         }
@@ -42,7 +41,7 @@ public class InformedSearch {
             board.print();
         }
 
-        if (board.isGoalState()) {
+        if (board.isGoalState(depth)) {
             goal = board;
             return true;
         }
@@ -59,7 +58,7 @@ public class InformedSearch {
             System.out.println("\nPossible moves:");
         }
 
-        BoardWeight[] states = new BoardWeight[4];
+        BoardAndWeight[] states = new BoardAndWeight[4];
         int index = 0;
         for (GameState b : board) { // Lists possible moves from current board.
             if (b == null) {
@@ -71,16 +70,16 @@ public class InformedSearch {
             if (debug) {
                 System.out.println("");
             }
-            states[index++] = new BoardWeight((Board) b, evaluationFunction(b, heuristicMethod));
+            states[index++] = new BoardAndWeight((Board) b, evaluationFunction(b, heuristicMethod));
         }
         Arrays.sort(states);
-        
+
         //Iterating best first
-        for (BoardWeight state : states) {
+        for (BoardAndWeight state : states) {
             if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
                 continue;
             }
-            if (depthFirstSearch(state.b)) {
+            if (depthFirstSearch(state.board)) {
                 return true;
             }
         }
@@ -89,52 +88,54 @@ public class InformedSearch {
         return false;
     }
 
-    private static class BoardWeight implements Comparable {
+    private static class BoardAndWeight implements Comparable {
 
-        Board b;
-        int w;
+        private final Board board;
+        private final int weight;
 
-        public BoardWeight(Board b, int w) {
-            this.b = b;
-            this.w = w;
+        public BoardAndWeight(Board b, int w) {
+            this.board = b;
+            this.weight = w;
         }
 
+        @Override
         public int compareTo(Object other) {
-            BoardWeight otherBoardWeight = (BoardWeight) other;
-            if (otherBoardWeight.w == w) {
-                return 0;
-            }
-            if (otherBoardWeight.w > w) {
-                return -1;
-            }
-            return 1;
+            BoardAndWeight otherBoard = (BoardAndWeight) other;
+            return this.weight - otherBoard.weight;
+                
         }
     }
 
     /*
         Evaluation Functions for a sliding tile board game
      */
-    static enum heuristicMethods {
+    public static enum HeuristicMethods {
         NETOUTOFPLACE,
         MANHATTAN
     }
 
-    static public int maxEvaluationFunction(GameState state) {
+    public static int maxEvaluationFunction(GameState state) {
         int max = 0;
-        for (heuristicMethods choice : heuristicMethods.values()) {
-            int val = evaluationFunction(state, choice);
-            if (val > max) {
-                max = val;
+        for (HeuristicMethods method : HeuristicMethods.values()) {
+            int evaluationResult = evaluationFunction(state, method);
+            if (evaluationResult > max) {
+                max = evaluationResult;
             }
         }
         return max;
     }
 
-    static public int evaluationFunction(GameState game, heuristicMethods choice) {
-        Board state = (Board) game;
+    public static int evaluationFunction(GameState gameState, HeuristicMethods method) {
+        Board state = (Board) gameState;
 
-        //net tiles out of place, manhattan model (sum of distances), 
-        switch (choice) {
+        /**
+         * Heuristic functions:
+         *
+         * Net tiles out of place
+         *
+         * Manhattan distance
+         */
+        switch (method) {
             case NETOUTOFPLACE:
                 return state.netOutOfPlace();
             case MANHATTAN:

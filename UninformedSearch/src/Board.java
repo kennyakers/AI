@@ -11,31 +11,34 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Board implements GameState, Iterable<GameState> {
+public class Board implements GameState, Iterable<GameState>, Statistics {
 
-    private int[][] board;
+    private final int[][] board;
     private int blankX;
     private int blankY;
     private final int dimension;
+    private final boolean solvableCheck;
+    private final boolean debug;
+    private int goalDepth;
 
-    public Board(int dimension, boolean check) {
-        System.out.println("Generating starting state:");
+    public Board(int dimension, boolean check, boolean debugFlag) {
         this.dimension = dimension;
+        this.solvableCheck = check;
+        this.debug = debugFlag;
         this.board = new int[dimension][dimension];
 
         int[] arr = new int[dimension * dimension];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
         }
-        
-        if(check){
+
+        if (this.solvableCheck) {
             this.shuffleArray(arr);
             while (!isValid(arr)) {
                 this.shuffleArray(arr);
             }
         }
-        
-        
+
         int counter = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
@@ -49,7 +52,9 @@ public class Board implements GameState, Iterable<GameState> {
         }
     }
 
-    public Board(int[][] boardIn) {
+    public Board(int[][] boardIn, boolean check, boolean debugFlag) {
+        this.solvableCheck = check;
+        this.debug = debugFlag;
         this.dimension = boardIn.length;
         this.board = new int[dimension][dimension];
         for (int i = 0; i < this.dimension; i++) {
@@ -64,7 +69,9 @@ public class Board implements GameState, Iterable<GameState> {
     /*
         Intializes instance from a board array
      */
-    public Board(int[] boardArray, boolean check) {
+    public Board(int[] boardArray, boolean check, boolean debugFlag) {
+        this.solvableCheck = check;
+        this.debug = debugFlag;
         int[][] boardIn = new int[(int) Math.sqrt(boardArray.length)][(int) Math.sqrt(boardArray.length)];
         int index = 0;
 
@@ -73,16 +80,14 @@ public class Board implements GameState, Iterable<GameState> {
                 boardIn[i][j] = boardArray[index++];
             }
         }
-        
-        
-        if (check) {
+
+        if (this.solvableCheck) {
             this.shuffleArray(boardArray);
             while (!isValid(boardArray)) {
                 this.shuffleArray(boardArray);
             }
         }
-        
-        
+
         this.dimension = boardIn.length;
         this.board = new int[dimension][dimension];
         for (int i = 0; i < this.dimension; i++) {
@@ -118,37 +123,41 @@ public class Board implements GameState, Iterable<GameState> {
         int rowsFromTop = zeroPosition / dimension;
         int rowsFromBot = dimension - rowsFromTop;
 
-        System.out.println("\t" + Arrays.toString(arr));
-        System.out.println("\tInversions: " + inversions);
-        System.out.println("\tRows From Bot: " + rowsFromBot);
         boolean valid = ((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
-        System.out.println("\tValid: " + valid + "\n");
+
+        if (Tester.debug) {
+            System.out.println("\t" + Arrays.toString(arr));
+            System.out.println("\tInversions: " + inversions);
+            System.out.println("\tRows From Bot: " + rowsFromBot);
+            System.out.println("\tValid: " + valid + "\n");
+        }
 
         return valid;
     }
 
+    @Override
     public stateIterator iterator() {
 
         Board[] returnable = new Board[4];
         int index = 0;
 
         if (this.blankY - 1 >= 0) {
-            Board up = new Board(this.board);
+            Board up = new Board(this.board, this.solvableCheck, this.debug);
             up.swap(blankX, blankY, blankX, blankY - 1);
             returnable[index++] = up;
         }
         if (this.blankY + 1 < this.dimension) {
-            Board down = new Board(this.board);
+            Board down = new Board(this.board, this.solvableCheck, this.debug);
             down.swap(blankX, blankY, blankX, blankY + 1);
             returnable[index++] = down;
         }
         if (this.blankX - 1 >= 0) {
-            Board left = new Board(this.board);
+            Board left = new Board(this.board, this.solvableCheck, this.debug);
             left.swap(blankX, blankY, blankX - 1, blankY);
             returnable[index++] = left;
         }
         if (this.blankX + 1 < this.dimension) {
-            Board right = new Board(this.board);
+            Board right = new Board(this.board, this.solvableCheck, this.debug);
             right.swap(blankX, blankY, blankX + 1, blankY);
             returnable[index++] = right;
         }
@@ -214,7 +223,8 @@ public class Board implements GameState, Iterable<GameState> {
         return -1;
     }
 
-    public boolean isGoalState() {
+    @Override
+    public boolean isGoalState(int stateDepth) {
         int counter = 1;
         if (this.board[this.dimension - 1][this.dimension - 1] != 0) {
             return false;
@@ -230,9 +240,11 @@ public class Board implements GameState, Iterable<GameState> {
                 counter++;
             }
         }
+        this.goalDepth = stateDepth; // Record its depth for statistics
         return true;
     }
 
+    @Override
     public void print() {
         int counter = 0;
         for (int i = 0; i < board.length; i++) {
@@ -248,41 +260,44 @@ public class Board implements GameState, Iterable<GameState> {
         return String.valueOf(blankX) + ", " + String.valueOf(blankY);
     }
 
-    public int netOutOfPlace(){
+    public int netOutOfPlace() {
         int sum = 0;
-        for(int i = 0; i < dimension; i++){
-            for(int j = 0; j < dimension; j++){
-                if(!inPlace(get(i,j))){
-                    sum+=1;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (!inPlace(get(i, j))) {
+                    sum += 1;
                 }
             }
         }
         return sum;
     }
-    public int manhattanSum(){
+
+    public int manhattanSum() {
         int sum = 0;
-        for(int i = 0; i < dimension; i++){
-            for(int j = 0; j < dimension; j++){
-                sum += manhattan(get(i,j));
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                sum += manhattan(get(i, j));
             }
         }
         return sum;
     }
-    public boolean inPlace(int val){
-        if(val == 0)
+
+    public boolean inPlace(int val) {
+        if (val == 0) {
             return board[dimension - 1][dimension - 1] == 0;
-        
+        }
+
         return val - 1 == getRow(val) * dimension + getColumn(val);
     }
-    public int manhattan(int val){
-        int desiredRow = (val / dimension) -1;
-        int desiredCol = (val % dimension) -1;
+
+    public int manhattan(int val) {
+        int desiredRow = (val / dimension) - 1;
+        int desiredCol = (val % dimension) - 1;
         int actualRow = getRow(val);
         int actualCol = getColumn(val);
         return (Math.abs(desiredRow - actualRow) + Math.abs(desiredCol - actualCol));
     }
-    
-    
+
     private void shuffleArray(int[] ar) {
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
@@ -301,6 +316,21 @@ public class Board implements GameState, Iterable<GameState> {
             ar[index] = ar[i];
             ar[i] = a;
         }
+    }
+
+    @Override
+    public int goalStateDepth() {
+        return this.goalDepth;
+    }
+
+    @Override
+    public int maxDepthExamined() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int toalNodesExamined() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private class stateIterator implements Iterator<GameState> {

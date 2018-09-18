@@ -37,7 +37,7 @@ public class DepthLimited {
             board.print();
         }
 
-        if (board.isGoalState()) {
+        if (board.isGoalState(depth)) {
             goal = board;
             return true;
         }
