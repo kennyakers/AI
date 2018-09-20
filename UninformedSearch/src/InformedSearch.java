@@ -21,13 +21,13 @@ public class InformedSearch {
         heuristicMethod = method;
         maxDepth = max;
         debug = debugFlag;
-        if (depthFirstSearch(board)) {
+        if (bestFirstSearch(board)) {
             return goal;
         }
         return null;
     }
 
-    private static boolean depthFirstSearch(GameState board) {
+    private static boolean bestFirstSearch(GameState board) {
         calls++;
 
         if (calls > depth) {
@@ -79,7 +79,7 @@ public class InformedSearch {
             if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
                 continue;
             }
-            if (depthFirstSearch(state.board)) {
+            if (bestFirstSearch(state.board)) {
                 return true;
             }
         }
@@ -102,7 +102,7 @@ public class InformedSearch {
         public int compareTo(Object other) {
             BoardAndWeight otherBoard = (BoardAndWeight) other;
             return this.weight - otherBoard.weight;
-                
+
         }
     }
 

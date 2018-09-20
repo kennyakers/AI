@@ -10,16 +10,14 @@ import java.io.Console;
  * TODO:
  *
  * Statistics
- *
- * Max depth
- *
- * Goal state depth
+ *      - Max depth
+ *      - Goal state depth
  */
 public class Tester {
 
     private static String startState = "";
     private static int dimension = 0;
-    public static boolean debug = false;
+    private static boolean debug = false;
     private static boolean override = true;
 
     /*
@@ -106,6 +104,7 @@ public class Tester {
             board = new Board(dimension, override, debug);
         }
         board.print();
+        
     }
 
 }

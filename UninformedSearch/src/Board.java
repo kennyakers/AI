@@ -125,7 +125,7 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
 
         boolean valid = ((board.length % 2 == 1) && (inversions % 2 == 0)) || ((board.length % 2 == 0) && ((rowsFromBot % 2 == 1) == (inversions % 2 == 0)));
 
-        if (Tester.debug) {
+        if (this.debug) {
             System.out.println("\t" + Arrays.toString(arr));
             System.out.println("\tInversions: " + inversions);
             System.out.println("\tRows From Bot: " + rowsFromBot);
