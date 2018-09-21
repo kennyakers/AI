@@ -4,21 +4,16 @@ import java.io.Console;
 /**
  * Kenny Akers and Aidan Chandra AI 9/10/18
  *
- * Sliding tile solver using uninformed search (Iterative deepening depth first
- * search)
+ * Sliding tile solver using informed search (RBFS)
  *
- * TODO:
- *
- * Statistics
- *      - Max depth
- *      - Goal state depth
  */
 public class Tester {
 
-    private static String startState = "";
-    private static int dimension = 0;
-    private static boolean debug = false;
-    private static boolean override = true;
+    private static String startState;
+    private static int dimension;
+    private static boolean debug;
+    private static boolean override;
+    private static boolean statistics;
 
     /*
     Required Arguments:
@@ -35,7 +30,10 @@ public class Tester {
         Console console = System.console();
         String option = "";
         dimension = 0;
+        startState = "";
+        debug = false;
         override = false;
+        statistics = false;
 
         if (console == null) {
             System.err.println("No console");
@@ -55,6 +53,9 @@ public class Tester {
                     continue;
                 case "-verbose":
                     debug = true;
+                    continue;
+                case "-stats":
+                    statistics = true;
                     continue;
             }
 
@@ -76,6 +77,7 @@ public class Tester {
             System.out.println("Start state: " + startState);
             System.out.println("Dimension: " + dimension);
             System.out.println("Override: " + override);
+            System.out.println("Statistics: " + statistics);
         }
         Board board;
 
@@ -103,8 +105,17 @@ public class Tester {
             }
             board = new Board(dimension, override, debug);
         }
-        board.print();
+        GameState sol = InformedSearch.bestFirstSearch(board, InformedSearch.HeuristicMethods.MANHATTAN, debug);
+        Board solution = (Board) sol;
+        if (statistics) {
+            System.out.println("STATISTICS");
+            System.out.println("Goal State Depth: " + InformedSearch.goalStateDepth);
+            System.out.println("Max Depth Explored: " + InformedSearch.maxDepth);
+        }
         
+        System.out.println("\nSolution:");
+        solution.print();
+
     }
 
 }

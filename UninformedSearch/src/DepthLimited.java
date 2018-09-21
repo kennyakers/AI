@@ -37,7 +37,7 @@ public class DepthLimited {
             board.print();
         }
 
-        if (board.isGoalState(depth)) {
+        if (board.isGoalState()) {
             goal = board;
             return true;
         }
@@ -77,9 +77,5 @@ public class DepthLimited {
         calls--;
 
         return false;
-    }
-
-    public static int getDepth() {
-        return depth;
     }
 }

@@ -1,109 +1,119 @@
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Kenny Akers and Aidan Chandra AI
  *
- * Sliding tile solver using informed search (Recursive Best-First Search)
+ * Sliding tile solver using informed RBFS (Recursive Best-First Search)
  */
 public class InformedSearch {
 
-    public static int depth = 0;
-    public static int calls = 0;
-    private static int maxDepth = 0;
-    private static HeuristicMethods heuristicMethod;
-
+    private static int depth;
+    private static int calls;
     private static boolean debug;
+    
+    public static int maxDepth;
+    public static int goalStateDepth;
 
+    private static HeuristicMethods heuristicMethod;
     private static GameState goal;
 
-    public static GameState search(GameState board, int max, HeuristicMethods method, boolean debugFlag) {
+    public static GameState bestFirstSearch(GameState board, HeuristicMethods method, boolean debugFlag) {
+        depth = 0;
+        calls = 0;
+        maxDepth = 0;
         heuristicMethod = method;
-        maxDepth = max;
         debug = debugFlag;
-        if (bestFirstSearch(board)) {
+        if (RBFS((Board) board, Integer.MAX_VALUE)) {
             return goal;
         }
         return null;
     }
 
-    private static boolean bestFirstSearch(GameState board) {
+    private static boolean RBFS(Board board, int fLimit) {
         calls++;
-
         if (calls > depth) {
             depth = calls;
         }
 
+        if (depth > maxDepth) {
+            maxDepth = depth;
+        }
+
         if (debug) {
             System.out.println("\nCurrent depth: " + depth);
-        }
-        if (debug) {
             board.print();
         }
 
-        if (board.isGoalState(depth)) {
+        if (board.isGoalState()) {
+            goalStateDepth = depth;
             goal = board;
             return true;
-        }
-
-        if (depth >= maxDepth) {
-            if (debug) {
-                System.out.println("Reached maximum depth " + depth);
-            }
-            calls--;
-            return false;
         }
 
         if (debug) {
             System.out.println("\nPossible moves:");
         }
 
-        BoardAndWeight[] states = new BoardAndWeight[4];
+        ArrayList<Board> successors = new ArrayList<>();
         int index = 0;
         for (GameState b : board) { // Lists possible moves from current board.
             if (b == null) {
                 continue;
             }
+
+            Board state = (Board) b;
+
             if (debug) {
-                b.print();
+                state.print();
             }
             if (debug) {
                 System.out.println("");
             }
-            states[index++] = new BoardAndWeight((Board) b, evaluationFunction(b, heuristicMethod));
+            state.setWeight(evaluationFunction(state, heuristicMethod));
+            successors.add(state);
         }
-        Arrays.sort(states);
+
+        /*
+        BELOW LINE DOES THE SAME AS THE BELOW FOR-EACH LOOP. 
+        INTERESTING EXAMPLE OF JAVA 8.
+        
+        successors.stream().filter((s) -> !(s == null)).map((s) -> (Board) s).forEachOrdered((successor) -> {
+            successor.setWeight(Math.max(evaluationFunction(successor, heuristicMethod), evaluationFunction(board, heuristicMethod)));
+        });
+         */
+        for (GameState s : successors) {
+            if (s == null) {
+                continue;
+            }
+            Board successor = (Board) s;
+            successor.setWeight(Math.max(evaluationFunction(successor, heuristicMethod), evaluationFunction(board, heuristicMethod)));
+        }
+
+        Collections.sort(successors);
 
         //Iterating best first
-        for (BoardAndWeight state : states) {
+        for (GameState state : successors) {
             if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
                 continue;
             }
-            if (bestFirstSearch(state.board)) {
+
+            Board successor = (Board) state;
+
+            // if best.f > f limit then return failure, best.f
+            if (successor.getWeight() > fLimit) {
+                return false;
+            }
+
+            // result,best.f ← RBFS(problem,best,min(f limit,alternative))
+            if (RBFS(successor, Math.min(fLimit, successor.getWeight()))) {
                 return true;
             }
         }
         calls--;
 
         return false;
-    }
-
-    private static class BoardAndWeight implements Comparable {
-
-        private final Board board;
-        private final int weight;
-
-        public BoardAndWeight(Board b, int w) {
-            this.board = b;
-            this.weight = w;
-        }
-
-        @Override
-        public int compareTo(Object other) {
-            BoardAndWeight otherBoard = (BoardAndWeight) other;
-            return this.weight - otherBoard.weight;
-
-        }
     }
 
     /*
@@ -114,7 +124,7 @@ public class InformedSearch {
         MANHATTAN
     }
 
-    public static int maxEvaluationFunction(GameState state) {
+    private static int maxEvaluationFunction(GameState state) {
         int max = 0;
         for (HeuristicMethods method : HeuristicMethods.values()) {
             int evaluationResult = evaluationFunction(state, method);
@@ -125,7 +135,7 @@ public class InformedSearch {
         return max;
     }
 
-    public static int evaluationFunction(GameState gameState, HeuristicMethods method) {
+    private static int evaluationFunction(GameState gameState, HeuristicMethods method) {
         Board state = (Board) gameState;
 
         /**
@@ -144,7 +154,4 @@ public class InformedSearch {
         return -1;
     }
 
-    public static int getDepth() {
-        return depth;
-    }
 }

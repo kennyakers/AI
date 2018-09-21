@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Board implements GameState, Iterable<GameState>, Statistics {
+public class Board implements GameState, Iterable<GameState>, Comparable<GameState> {
 
     private final int[][] board;
     private int blankX;
@@ -19,7 +19,7 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
     private final int dimension;
     private final boolean solvableCheck;
     private final boolean debug;
-    private int goalDepth;
+    private int weight;
 
     public Board(int dimension, boolean check, boolean debugFlag) {
         this.dimension = dimension;
@@ -32,8 +32,8 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
             arr[i] = i;
         }
 
-        if (this.solvableCheck) {
-            this.shuffleArray(arr);
+        this.shuffleArray(arr);
+        if (!this.solvableCheck) {
             while (!isValid(arr)) {
                 this.shuffleArray(arr);
             }
@@ -81,8 +81,8 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
             }
         }
 
-        if (this.solvableCheck) {
-            this.shuffleArray(boardArray);
+        this.shuffleArray(boardArray);
+        if (!this.solvableCheck) {
             while (!isValid(boardArray)) {
                 this.shuffleArray(boardArray);
             }
@@ -224,7 +224,7 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
     }
 
     @Override
-    public boolean isGoalState(int stateDepth) {
+    public boolean isGoalState() {
         int counter = 1;
         if (this.board[this.dimension - 1][this.dimension - 1] != 0) {
             return false;
@@ -240,7 +240,6 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
                 counter++;
             }
         }
-        this.goalDepth = stateDepth; // Record its depth for statistics
         return true;
     }
 
@@ -318,19 +317,34 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
         }
     }
 
-    @Override
-    public int goalStateDepth() {
-        return this.goalDepth;
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
+    public int[][] getBoard() {
+        return this.board;
+    }
+
+    public int getDimension() {
+        return this.dimension;
+    }
+
+    public boolean isSolvableCheck() {
+        return this.solvableCheck;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
     }
 
     @Override
-    public int maxDepthExamined() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int toalNodesExamined() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int compareTo(GameState other) {
+        Board otherBoard = (Board) other;
+        return this.getWeight() - otherBoard.getWeight();
     }
 
     private class stateIterator implements Iterator<GameState> {
@@ -343,10 +357,12 @@ public class Board implements GameState, Iterable<GameState>, Statistics {
             index = 0;
         }
 
+        @Override
         public boolean hasNext() {
             return index < arr.length;
         }
 
+        @Override
         public GameState next() {
             return arr[index++];
         }
