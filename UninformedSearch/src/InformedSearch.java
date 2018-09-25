@@ -12,7 +12,7 @@ public class InformedSearch {
     private static int depth;
     private static int calls;
     private static boolean debug;
-    
+
     public static int maxDepth;
     public static int goalStateDepth;
 
@@ -28,7 +28,9 @@ public class InformedSearch {
         if (RBFS((Board) board, Integer.MAX_VALUE)) {
             return goal;
         }
-        return null;
+        else {
+            return null;
+        }
     }
 
     private static boolean RBFS(Board board, int fLimit) {
@@ -57,7 +59,6 @@ public class InformedSearch {
         }
 
         ArrayList<Board> successors = new ArrayList<>();
-        int index = 0;
         for (GameState b : board) { // Lists possible moves from current board.
             if (b == null) {
                 continue;
@@ -71,33 +72,28 @@ public class InformedSearch {
             if (debug) {
                 System.out.println("");
             }
-            state.setWeight(evaluationFunction(state, heuristicMethod));
+            state.setWeight(evaluationFunction(state, board, heuristicMethod));
             successors.add(state);
         }
 
-        /*
-        BELOW LINE DOES THE SAME AS THE BELOW FOR-EACH LOOP. 
-        INTERESTING EXAMPLE OF JAVA 8.
-        
-        successors.stream().filter((s) -> !(s == null)).map((s) -> (Board) s).forEachOrdered((successor) -> {
-            successor.setWeight(Math.max(evaluationFunction(successor, heuristicMethod), evaluationFunction(board, heuristicMethod)));
-        });
-         */
+        int weight = 0;
         for (GameState s : successors) {
             if (s == null) {
                 continue;
             }
             Board successor = (Board) s;
-            successor.setWeight(Math.max(evaluationFunction(successor, heuristicMethod), evaluationFunction(board, heuristicMethod)));
+            weight = Math.min(evaluationFunction(successor, board, heuristicMethod), fLimit); //used to be board.getWeight()
+            System.out.print("Setting the board with h(n) of ");
+            System.out.println(successor.manhattanSum());
+            successor.print();
+            System.out.println("to " + weight + "\n");
+            successor.setWeight(weight);
         }
 
         Collections.sort(successors);
 
         //Iterating best first
         for (GameState state : successors) {
-            if (state == null) { // Skip null states (i.e. when there are only 2 or 3 valid moves).
-                continue;
-            }
 
             Board successor = (Board) state;
 
@@ -107,12 +103,11 @@ public class InformedSearch {
             }
 
             // result,best.f ← RBFS(problem,best,min(f limit,alternative))
-            if (RBFS(successor, Math.min(fLimit, successor.getWeight()))) {
+            if (RBFS(successor, Math.max(fLimit, weight))) {
                 return true;
             }
         }
         calls--;
-
         return false;
     }
 
@@ -124,20 +119,10 @@ public class InformedSearch {
         MANHATTAN
     }
 
-    private static int maxEvaluationFunction(GameState state) {
-        int max = 0;
-        for (HeuristicMethods method : HeuristicMethods.values()) {
-            int evaluationResult = evaluationFunction(state, method);
-            if (evaluationResult > max) {
-                max = evaluationResult;
-            }
-        }
-        return max;
-    }
-
-    private static int evaluationFunction(GameState gameState, HeuristicMethods method) {
+    private static int evaluationFunction(GameState gameState, GameState parent, HeuristicMethods method) {
         Board state = (Board) gameState;
-
+        Board ancestor = (Board) parent;
+        int sum = 0;
         /**
          * Heuristic functions:
          *
@@ -147,11 +132,14 @@ public class InformedSearch {
          */
         switch (method) {
             case NETOUTOFPLACE:
-                return state.netOutOfPlace();
+                sum = state.netOutOfPlace();
+                break;
             case MANHATTAN:
-                return state.manhattanSum();
+                sum = state.manhattanSum();
+                break;
         }
-        return -1;
+        sum += ancestor.getWeight();
+        return sum;
     }
 
 }
