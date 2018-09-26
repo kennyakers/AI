@@ -32,35 +32,6 @@ public class InformedSearch {
         }
     }
 
-//    private static resultAndLimit RBFS(Board board, int fLimit) {
-//        if(board.isGoalState()){
-//            System.out.println("found solution");
-//            goal = board;
-//            return new resultAndLimit(fLimit,true);
-//        }
-//        ArrayList<Board> successors = new ArrayList();
-//        for(GameState b : board){
-//            if(b == null)
-//                continue;
-//            Board successor = (Board)b;
-//            successor.setWeight(Math.max(evaluationFunction(successor,board,heuristicMethod), board.getWeight()));
-//            successors.add(successor);
-//        }
-//        if(successors.size() == 0)
-//            return new resultAndLimit(Integer.MAX_VALUE,false);
-//        Collections.sort(successors);
-//        while(true){
-//            Board best = successors.get(0);
-//            if(best.getWeight() > fLimit){
-//                return new resultAndLimit(best.getWeight(),false);
-//            }
-//            Board alternative = successors.get(1);
-//            resultAndLimit result = RBFS(best,Math.min(fLimit,alternative.getWeight()));
-//            best.setWeight(result.flimit);
-//            if(result.result == true)
-//                return result;
-//        }
-//    }
     private static boolean RBFS(Board board, int fLimit) {
         calls++;
         if (calls > depth) {
@@ -111,12 +82,15 @@ public class InformedSearch {
             }
             Board successor = (Board) s;
             weight = Math.min(evaluationFunction(successor, board, heuristicMethod), fLimit); //used to be board.getWeight()
-            System.out.print("Setting the board with h(n) of ");
-            System.out.println(successor.netOutOfPlace());
-            successor.print();
-            System.out.println("to " + weight + "\n");
+            if (debug) {
+                System.out.print("Setting the board with h(n) of ");
+                System.out.println(successor.manhattanSum());
+                successor.print();
+                System.out.println("to " + weight + "\n");
+            }
             successor.setWeight(weight);
         }
+
         Collections.sort(successors);
 
         //Iterating best first
@@ -130,23 +104,10 @@ public class InformedSearch {
             }
 
             // result,best.f ← RBFS(problem,best,min(f limit,alternative))
-            if (RBFS(successor, Math.max(fLimit, weight))) {
-                return true;
-            }
+            return RBFS(successor, Math.max(fLimit, weight));
         }
         calls--;
         return false;
-    }
-
-    private static class resultAndLimit {
-
-        private int flimit;
-        private boolean result;
-
-        public resultAndLimit(int flimit, boolean result) {
-            this.flimit = flimit;
-            this.result = result;
-        }
     }
 
     /*
@@ -170,13 +131,13 @@ public class InformedSearch {
          */
         switch (method) {
             case NETOUTOFPLACE:
-                sum = state.netOutOfPlace();
+                sum = state.netOutOfPlace(); // h(n)
                 break;
             case MANHATTAN:
-                sum = state.manhattanSum();
+                sum = state.manhattanSum(); // h(n)
                 break;
         }
-        sum += ancestor.getWeight();
+        sum += ancestor.getWeight(); // g(n)
         return sum;
     }
 
