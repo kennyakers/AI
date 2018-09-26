@@ -105,7 +105,7 @@ public class Tester {
             }
             board = new Board(dimension, override, debug);
         }
-        GameState sol = InformedSearch.bestFirstSearch(board, InformedSearch.HeuristicMethods.MANHATTAN, debug);
+        GameState sol = InformedSearch.bestFirstSearch(board, InformedSearch.HeuristicMethods.NETOUTOFPLACE, debug);
         Board solution = (Board) sol;
         if (statistics) {
             System.out.println("STATISTICS");
