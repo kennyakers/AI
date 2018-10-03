@@ -71,7 +71,6 @@ public class InformedSearch {
             if (debug) {
                 System.out.println("");
             }
-            state.setWeight(evaluationFunction(state, board, heuristicMethod));
             successors.add(state);
         }
 

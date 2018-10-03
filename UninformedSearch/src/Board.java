@@ -20,7 +20,7 @@ public class Board implements GameState, Iterable<GameState>, Comparable<GameSta
     private final boolean solvableCheck;
     private final boolean debug;
     private int weight;
-
+    
     public Board(int dimension, boolean check, boolean debugFlag) {
         this.dimension = dimension;
         this.solvableCheck = check;
@@ -52,7 +52,7 @@ public class Board implements GameState, Iterable<GameState>, Comparable<GameSta
         }
     }
 
-    public Board(int[][] boardIn, boolean check, boolean debugFlag) {
+    public Board(int[][] boardIn, boolean check, boolean debugFlag) {       
         this.solvableCheck = check;
         this.debug = debugFlag;
         this.dimension = boardIn.length;
@@ -69,7 +69,7 @@ public class Board implements GameState, Iterable<GameState>, Comparable<GameSta
     /*
         Intializes instance from a board array
      */
-    public Board(int[] boardArray, boolean check, boolean debugFlag) {
+    public Board(int[] boardArray, boolean check, boolean debugFlag) {    
         this.solvableCheck = check;
         this.debug = debugFlag;
         int[][] boardIn = new int[(int) Math.sqrt(boardArray.length)][(int) Math.sqrt(boardArray.length)];
@@ -290,11 +290,34 @@ public class Board implements GameState, Iterable<GameState>, Comparable<GameSta
     }
 
     public int manhattan(int val) {
+        int actualRow = getRow(val);
+        int actualCol = getColumn(val);
+        
+        int arr[] = new int[dimension*dimension];
+        for(int i = 1; i < arr.length; i++)
+            arr[i-1] = i;
+        arr[arr.length-1] = 0;
+        
+        Board goalState = new Board(arr,true,false);
+        int desiredRow = goalState.getRow(val);
+        int desiredCol = goalState.getColumn(val);
+        
+        return Math.abs(actualRow - desiredRow) + Math.abs(actualCol - desiredCol);
+        
+        
+        /*
         int desiredRow = (val / dimension) - 1;
         int desiredCol = (val % dimension) - 1;
+        if(val == 0){
+            desiredRow = dimension - 1;
+            desiredCol = desiredRow;
+        }
         int actualRow = getRow(val);
         int actualCol = getColumn(val);
         return (Math.abs(desiredRow - actualRow) + Math.abs(desiredCol - actualCol));
+        */
+        
+        
     }
 
     private void shuffleArray(int[] ar) {
