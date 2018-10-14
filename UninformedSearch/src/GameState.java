@@ -9,5 +9,5 @@ public interface GameState extends Iterable<GameState> {
     public Iterator<GameState> iterator();
 
     public void print();
-    
+
 }

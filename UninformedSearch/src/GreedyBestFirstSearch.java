@@ -2,13 +2,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
- * Kenny Akers and Aidan Chandra AI
- *
- * Sliding tile solver using informed RBFS (Recursive Best-First Search)
- */
-public class InformedSearch {
+public class GreedyBestFirstSearch {
 
+    
     private static int depth;
     private static int calls;
     private static boolean debug;
@@ -25,14 +21,14 @@ public class InformedSearch {
         maxDepth = 0;
         heuristicMethod = method;
         debug = debugFlag;
-        if (RBFS((Board) board, Integer.MAX_VALUE)) {
+        if (GBFS((Board) board)) {
             return goal;
         } else {
             return null;
         }
     }
 
-    private static boolean RBFS(Board board, int fLimit) {
+    private static boolean GBFS(Board board) {
         calls++;
         if (calls > depth) {
             depth = calls;
@@ -43,7 +39,7 @@ public class InformedSearch {
         }
 
         if (debug) {
-            System.out.println("\nCurrent depth: " + depth + " | fLimit: " + fLimit);
+            System.out.println("\nCurrent depth: " + depth);
             board.print();
         }
 
@@ -89,42 +85,8 @@ public class InformedSearch {
         }
 
         Collections.sort(successors);
-
-        for (GameState state : successors) {
-            Board bestNode = (Board) state;
-            if (bestNode.getWeight() > fLimit) {
-                board.setWeight(bestNode.getWeight());
-                return false; // Go to next best successor
-            }
-
-            Board secondBest = successors.get(1);
-
-            if (RBFS(bestNode, Math.min(secondBest.getWeight(), fLimit))) {
-                return true;
-            }
-        }
-
-//        //Iterating best first
-//        boolean summation = false;
-//        for (GameState state : successors) {
-//
-//            Board successor = (Board) state;
-//
-//            // if best.f > f limit then return failure, best.f
-//            if (successor.getWeight() > fLimit) {
-//                System.out.println(successor.getWeight() + " is > " + fLimit + ". Do something");
-//                
-//            } else {
-//                System.out.println(successor.getWeight() + " is NOT > " + fLimit);
-//            }
-//
-//            // result,best.f ← RBFS(problem,best,min(f limit,alternative))
-//            summation = summation || RBFS(successor, Math.min(fLimit, weight));
-//            if(summation)
-//                return true;
-//        }
-        calls--;
-        return false;
+        
+        return GBFS(successors.get(0));
     }
 
     /*

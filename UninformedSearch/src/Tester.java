@@ -14,6 +14,7 @@ public class Tester {
     private static boolean debug;
     private static boolean override;
     private static boolean statistics;
+    private static boolean greedy;
 
     /*
     Required Arguments:
@@ -34,6 +35,7 @@ public class Tester {
         debug = false;
         override = false;
         statistics = false;
+        greedy = false;
 
         if (console == null) {
             System.err.println("No console");
@@ -57,6 +59,9 @@ public class Tester {
                 case "-stats":
                     statistics = true;
                     continue;
+                case "-greedy":
+                    greedy = true;
+                    continue;
             }
 
             switch (option) {
@@ -78,6 +83,7 @@ public class Tester {
             System.out.println("Dimension: " + dimension);
             System.out.println("Override: " + override);
             System.out.println("Statistics: " + statistics);
+            System.out.println("Greedy: " + greedy);
         }
         Board board;
 
@@ -105,14 +111,19 @@ public class Tester {
             }
             board = new Board(dimension, override, debug);
         }
-        GameState sol = InformedSearch.bestFirstSearch(board, InformedSearch.HeuristicMethods.MANHATTAN, debug);
+        GameState sol;
+        if (greedy) {
+            sol = GreedyBestFirstSearch.bestFirstSearch(board, GreedyBestFirstSearch.HeuristicMethods.MANHATTAN, debug);
+        } else {
+            sol = InformedSearch.bestFirstSearch(board, InformedSearch.HeuristicMethods.MANHATTAN, debug);
+        }
         Board solution = (Board) sol;
         if (statistics) {
             System.out.println("STATISTICS");
             System.out.println("Goal State Depth: " + InformedSearch.goalStateDepth);
             System.out.println("Max Depth Explored: " + InformedSearch.maxDepth);
         }
-        
+
         System.out.println("\nSolution:");
         solution.print();
 
