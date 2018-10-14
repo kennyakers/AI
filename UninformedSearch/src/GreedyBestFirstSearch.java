@@ -28,43 +28,55 @@ public class GreedyBestFirstSearch {
     }
 
     private static boolean GBFS(Board board) {
-        Board holder = board;
-        while (!holder.isGoalState()) {
-            ArrayList<Board> successors = new ArrayList<>();
-            for (GameState b : board) { // Lists possible moves from current board.
-                if (b == null) {
-                    continue;
-                }
-
-                Board state = (Board) b;
-
-                if (debug) {
-                    state.print();
-                    System.out.println("");
-                }
-                successors.add(state);
-            }
-            int weight = 0;
-            for (GameState s : successors) {
-                if (s == null) {
-                    continue;
-                }
-                Board successor = (Board) s;
-                weight = evaluationFunction(successor, board, heuristicMethod);
-                if (debug) {
-                    System.out.print("Setting the board with h(n) of ");
-                    System.out.println(successor.manhattanSum());
-                    successor.print();
-                    System.out.println("to " + weight + "\n");
-                }
-                successor.setWeight(weight);
-            }
-
-            Collections.sort(successors);
-            holder = successors.get(0);
+        calls++;
+        if (calls > depth) {
+            depth = calls;
         }
-        goal = holder;
-        return goal.isGoalState();
+         if (depth > maxDepth) {
+            maxDepth = depth;
+        }
+         if (debug) {
+            System.out.println("\nCurrent depth: " + depth);
+            board.print();
+        }
+         if (board.isGoalState()) {
+            goalStateDepth = depth;
+            goal = board;
+            return true;
+        }
+         if (debug) {
+            System.out.println("\nPossible moves:");
+        }
+         ArrayList<Board> successors = new ArrayList<>();
+        for (GameState b : board) { // Lists possible moves from current board.
+            if (b == null) {
+                continue;
+            }
+             Board state = (Board) b;
+             if (debug) {
+                state.print();
+                System.out.println("");
+            }
+            successors.add(state);
+        }
+         int weight = 0;
+        for (GameState s : successors) {
+            if (s == null) {
+                continue;
+            }
+            Board successor = (Board) s;
+            weight = evaluationFunction(successor, board, heuristicMethod);
+            if (debug) {
+                System.out.print("Setting the board with h(n) of ");
+                System.out.println(successor.manhattanSum());
+                successor.print();
+                System.out.println("to " + weight + "\n");
+            }
+            successor.setWeight(weight);
+        }
+         Collections.sort(successors);
+        
+        return GBFS(successors.get(0));
     }
 
     /*
