@@ -104,25 +104,6 @@ public class InformedSearch {
             }
         }
 
-//        //Iterating best first
-//        boolean summation = false;
-//        for (GameState state : successors) {
-//
-//            Board successor = (Board) state;
-//
-//            // if best.f > f limit then return failure, best.f
-//            if (successor.getWeight() > fLimit) {
-//                System.out.println(successor.getWeight() + " is > " + fLimit + ". Do something");
-//                
-//            } else {
-//                System.out.println(successor.getWeight() + " is NOT > " + fLimit);
-//            }
-//
-//            // result,best.f ← RBFS(problem,best,min(f limit,alternative))
-//            summation = summation || RBFS(successor, Math.min(fLimit, weight));
-//            if(summation)
-//                return true;
-//        }
         calls--;
         return false;
     }
